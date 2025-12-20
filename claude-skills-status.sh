@@ -45,35 +45,79 @@ fi
 
 echo ""
 
-# 2. 檢查個人 Skills
-echo -e "${BLUE}【個人 Skills】${NC}"
+# 2. 檢查個人 Skills（分類顯示）
+echo -e "${BLUE}【已安裝的 Skills】${NC}"
 echo -e "目錄: ${SKILLS_DIR}"
 echo ""
 
 if [ -d "$SKILLS_DIR" ]; then
-    skill_count=0
+    # 分類計數
+    personal_skills=()
+    n8n_skills=()
+    pine_skills=()
+    other_skills=()
+
     for skill_dir in "$SKILLS_DIR"/*/; do
         if [ -d "$skill_dir" ]; then
             skill_name=$(basename "$skill_dir")
             skill_file="$skill_dir/SKILL.md"
 
             if [ -f "$skill_file" ]; then
-                # 嘗試提取 description
-                desc=$(grep -A1 "^description:" "$skill_file" 2>/dev/null | head -1 | sed 's/^description: *//')
-                if [ -z "$desc" ]; then
-                    desc="(無描述)"
+                # 根據前綴分類
+                if [[ "$skill_name" == n8n-* ]]; then
+                    n8n_skills+=("$skill_name")
+                elif [[ "$skill_name" == pine-* ]]; then
+                    pine_skills+=("$skill_name")
+                elif [[ "$skill_name" == "triage" ]]; then
+                    personal_skills+=("$skill_name")
+                else
+                    other_skills+=("$skill_name")
                 fi
-                echo -e "  ${GREEN}✓${NC} ${BOLD}${skill_name}${NC}"
-                echo -e "    ${desc:0:60}..."
-                ((skill_count++))
-            else
-                echo -e "  ${YELLOW}⚠${NC} ${skill_name} (缺少 SKILL.md)"
             fi
         fi
     done
 
-    if [ $skill_count -eq 0 ]; then
-        echo -e "  ${YELLOW}尚未安裝任何個人 skill${NC}"
+    # 顯示個人 Skills
+    if [ ${#personal_skills[@]} -gt 0 ]; then
+        echo -e "  ${BOLD}個人 Skills (${#personal_skills[@]})${NC}"
+        for skill in "${personal_skills[@]}"; do
+            echo -e "    ${GREEN}✓${NC} $skill"
+        done
+        echo ""
+    fi
+
+    # 顯示 n8n Skills
+    if [ ${#n8n_skills[@]} -gt 0 ]; then
+        echo -e "  ${BOLD}n8n Skills (${#n8n_skills[@]})${NC}"
+        for skill in "${n8n_skills[@]}"; do
+            echo -e "    ${GREEN}✓${NC} $skill"
+        done
+        echo ""
+    fi
+
+    # 顯示 Pine Script Skills
+    if [ ${#pine_skills[@]} -gt 0 ]; then
+        echo -e "  ${BOLD}Pine Script Skills (${#pine_skills[@]})${NC}"
+        for skill in "${pine_skills[@]}"; do
+            echo -e "    ${GREEN}✓${NC} $skill"
+        done
+        echo ""
+    fi
+
+    # 顯示其他 Skills
+    if [ ${#other_skills[@]} -gt 0 ]; then
+        echo -e "  ${BOLD}其他 Skills (${#other_skills[@]})${NC}"
+        for skill in "${other_skills[@]}"; do
+            echo -e "    ${GREEN}✓${NC} $skill"
+        done
+        echo ""
+    fi
+
+    total_count=$((${#personal_skills[@]} + ${#n8n_skills[@]} + ${#pine_skills[@]} + ${#other_skills[@]}))
+    if [ $total_count -eq 0 ]; then
+        echo -e "  ${YELLOW}尚未安裝任何 skill${NC}"
+    else
+        echo -e "  ${BOLD}總計: ${total_count} 個 skills${NC}"
     fi
 else
     echo -e "  ${YELLOW}Skills 目錄不存在${NC}"
@@ -111,6 +155,14 @@ if [ -f "$SETTINGS_FILE" ] && jq -e '.enabledPlugins' "$SETTINGS_FILE" > /dev/nu
         echo ""
         echo -e "  ${GREEN}✓${NC} ${BOLD}context7${NC} (MCP 工具)"
         echo "    resolve-library-id, get-library-docs"
+    fi
+
+    # Notion
+    if jq -e '.enabledPlugins["Notion@claude-plugins-official"] == true' "$SETTINGS_FILE" > /dev/null 2>&1; then
+        echo ""
+        echo -e "  ${GREEN}✓${NC} ${BOLD}Notion${NC} (6 skills)"
+        echo "    notion-search, notion-find, notion-create-page, notion-create-task,"
+        echo "    notion-database-query, notion-create-database-row"
     fi
 fi
 

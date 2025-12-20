@@ -40,6 +40,7 @@ bash setup-plugins.sh
 /plugin install superpowers@superpowers-marketplace
 /plugin install claude-mem@thedotmack
 /plugin install context7@claude-plugins-official
+/plugin install Notion@claude-plugins-official
 ```
 
 ### Plugin 清單
@@ -49,6 +50,7 @@ bash setup-plugins.sh
 | superpowers | superpowers-marketplace | 核心 skills：TDD、debugging、brainstorming、code-review |
 | claude-mem | thedotmack | 跨對話記憶系統 |
 | context7 | claude-plugins-official | 即時文件查詢（MCP） |
+| Notion | claude-plugins-official | Notion 工作區整合（搜尋、建立頁面、任務管理） |
 
 ### settings.json
 
@@ -59,7 +61,8 @@ bash setup-plugins.sh
   "enabledPlugins": {
     "claude-mem@thedotmack": true,
     "context7@claude-plugins-official": true,
-    "superpowers@superpowers-marketplace": true
+    "superpowers@superpowers-marketplace": true,
+    "Notion@claude-plugins-official": true
   }
 }
 ```
@@ -109,6 +112,20 @@ rm -rf /tmp/n8n-skills
 | n8n-node-configuration | 節點設定指南 |
 | n8n-code-javascript | Code 節點 JavaScript 模式 |
 | n8n-code-python | Code 節點 Python 模式 |
+
+### Pine Script Skills（7 個）
+
+專為 TradingView Pine Script v6 開發設計的 skills。
+
+| Skill | 觸發時機 | 用途 |
+|-------|----------|------|
+| pine-developer | 建立/寫/實作 Pine Script | 撰寫生產級 Pine Script v6 代碼 |
+| pine-debugger | debug、fix、error、not working | 調試工具與問題排解 |
+| pine-backtester | backtest、performance、metrics | 回測指標與績效分析 |
+| pine-optimizer | optimize、improve、faster | 性能優化與 UX 增強 |
+| pine-manager | 複雜專案、trading system | 協調多步驟專案開發 |
+| pine-publisher | publish、release、documentation | 發布準備與 House Rules 合規 |
+| pine-visualizer | YouTube URL、概念分解 | 交易概念拆解為可實作組件 |
 
 ---
 
@@ -199,6 +216,17 @@ rm -rf /tmp/n8n-skills
 | mem-search | 搜尋跨對話記憶 |
 | troubleshoot | 診斷 claude-mem 問題 |
 
+## Notion 提供的 Skills（6 個）
+
+| Skill | 用途 |
+|-------|------|
+| notion-search | 搜尋 Notion 工作區 |
+| notion-find | 依標題關鍵字快速找頁面/資料庫 |
+| notion-create-page | 建立新頁面 |
+| notion-create-task | 在任務資料庫中建立任務 |
+| notion-database-query | 查詢資料庫並回傳結構化結果 |
+| notion-create-database-row | 在資料庫中插入新行 |
+
 ---
 
 ## 手動安裝步驟
@@ -259,7 +287,14 @@ cp ./commands/plugins-status.md ~/.claude/commands/
 │   ├── n8n-mcp-tools-expert/
 │   ├── n8n-node-configuration/
 │   ├── n8n-validation-expert/
-│   └── n8n-workflow-patterns/
+│   ├── n8n-workflow-patterns/
+│   ├── pine-backtester/
+│   ├── pine-debugger/
+│   ├── pine-developer/
+│   ├── pine-manager/
+│   ├── pine-optimizer/
+│   ├── pine-publisher/
+│   └── pine-visualizer/
 ├── commands/               # 自訂指令
 │   └── plugins-status.md
 └── scripts/                # 腳本
