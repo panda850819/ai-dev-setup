@@ -60,18 +60,26 @@ if [ -d "$SKILLS_DIR" ]; then
     for skill_dir in "$SKILLS_DIR"/*/; do
         if [ -d "$skill_dir" ]; then
             skill_name=$(basename "$skill_dir")
+
+            # 跳過 _ 開頭的目錄 (_deprecated, _shared)
+            [[ "$skill_name" == _* ]] && continue
+
             skill_file="$skill_dir/SKILL.md"
+            # 也檢查 index.md 或 skill.md (小寫)
+            [ ! -f "$skill_file" ] && skill_file="$skill_dir/index.md"
+            [ ! -f "$skill_file" ] && skill_file="$skill_dir/skill.md"
 
             if [ -f "$skill_file" ]; then
-                # 根據前綴分類
+                # 根據前綴分類（反轉邏輯：特定前綴歸類，其餘為個人）
                 if [[ "$skill_name" == n8n-* ]]; then
                     n8n_skills+=("$skill_name")
-                elif [[ "$skill_name" == pine-* ]]; then
+                elif [[ "$skill_name" == pine-* || "$skill_name" == "pine" ]]; then
                     pine_skills+=("$skill_name")
-                elif [[ "$skill_name" == "triage" || "$skill_name" == "quant-analyst" ]]; then
-                    personal_skills+=("$skill_name")
+                elif [[ "$skill_name" == frontend-* ]]; then
+                    other_skills+=("$skill_name")  # Frontend 歸到其他
                 else
-                    other_skills+=("$skill_name")
+                    # 其餘全部視為個人 skills
+                    personal_skills+=("$skill_name")
                 fi
             fi
         fi
@@ -104,9 +112,9 @@ if [ -d "$SKILLS_DIR" ]; then
         echo ""
     fi
 
-    # 顯示其他 Skills
+    # 顯示 Frontend Skills
     if [ ${#other_skills[@]} -gt 0 ]; then
-        echo -e "  ${BOLD}其他 Skills (${#other_skills[@]})${NC}"
+        echo -e "  ${BOLD}Frontend Skills (${#other_skills[@]})${NC}"
         for skill in "${other_skills[@]}"; do
             echo -e "    ${GREEN}✓${NC} $skill"
         done
